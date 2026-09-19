@@ -1,7 +1,6 @@
 package com.wwm.arabictranslator.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.view.Gravity
@@ -10,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.wwm.arabictranslator.settings.TranslatorSettings
 
 class OverlayManager(private val context: Context) {
 
@@ -17,6 +17,7 @@ class OverlayManager(private val context: Context) {
     private var containerView: LinearLayout? = null
     private var textView: TextView? = null
     private var layoutParams: WindowManager.LayoutParams? = null
+    private val settings = TranslatorSettings(context)
 
     fun showOverlay() {
         if (containerView != null) return
@@ -24,17 +25,18 @@ class OverlayManager(private val context: Context) {
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         containerView = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            setBackgroundColor(Color.parseColor("#DD000000"))
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(settings.backgroundColor)
             setPadding(30, 20, 30, 20)
             gravity = Gravity.CENTER
         }
 
         textView = TextView(context).apply {
-            text = "WWM Translator Ready..."
-            setTextColor(Color.YELLOW)
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16f)
+            text = "المترجم جاهز للعمل..."
+            setTextColor(settings.textColor)
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, settings.textSize)
             textDirection = View.TEXT_DIRECTION_RTL
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
         }
 
         containerView?.addView(textView)
