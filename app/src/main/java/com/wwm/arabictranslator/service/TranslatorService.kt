@@ -23,7 +23,11 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
+import com.wwm.arabictranslator.ai.WwmAiEngine
+import com.wwm.arabictranslator.glossary.GlossaryManager
+import com.wwm.arabictranslator.memory.TranslationMemory
 import com.wwm.arabictranslator.ocr.OcrEngine
+import com.wwm.arabictranslator.settings.TranslatorSettings
 import com.wwm.arabictranslator.translation.TranslationEngine
 import com.wwm.arabictranslator.ui.OverlayManager
 import kotlinx.coroutines.*
@@ -37,6 +41,11 @@ class TranslatorService : Service() {
 
     private val ocrEngine = OcrEngine()
     private val translationEngine = TranslationEngine()
+    private lateinit var settings: TranslatorSettings
+    private lateinit var glossaryManager: GlossaryManager
+    private lateinit var translationMemory: TranslationMemory
+    private val aiEngine = WwmAiEngine()
+
     private val serviceScope = CoroutineScope(Dispatchers.Main + Job())
 
     private var screenWidth = 0
@@ -50,6 +59,10 @@ class TranslatorService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        settings = TranslatorSettings(this)
+        glossaryManager = GlossaryManager(this)
+        translationMemory = TranslationMemory(this)
+        
         startForegroundService()
         overlayManager = OverlayManager(this)
         overlayManager?.showOverlay()
@@ -71,7 +84,6 @@ class TranslatorService : Service() {
             val mpManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             mediaProjection = mpManager.getMediaProjection(resultCode, data)
 
-            // تسجيل MediaProjection Callback الإجباري لمنع الكراش في أندرويد 14
             mediaProjection?.registerCallback(object : MediaProjection.Callback() {
                 override fun onStop() {
                     super.onStop()
@@ -90,7 +102,6 @@ class TranslatorService : Service() {
 
             imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
 
-            // قراءة البث المباشر تلقائياً
             imageReader?.setOnImageAvailableListener({ reader ->
                 if (isProcessing) {
                     val image = try { reader.acquireLatestImage() } catch (e: Exception) { null }
@@ -131,10 +142,29 @@ class TranslatorService : Service() {
                         ocrEngine.processImage(cleanBitmap) { detectedText ->
                             if (detectedText.isNotEmpty() && detectedText != lastProcessedText) {
                                 lastProcessedText = detectedText
+                                aiEngine.updateLastOcrText(detectedText)
+
                                 serviceScope.launch(Dispatchers.IO) {
-                                    val translatedText = translationEngine.translate(detectedText)
+                                    // 1. استخدام القاموس أولاً
+                                    val textWithGlossary = glossaryManager.applyGlossary(detectedText)
+                                    
+                                    // 2. الفحص داخل ذاكرة الترجمة
+                                    val cachedTranslation = translationMemory.get(textWithGlossary)
+                                    val finalTranslation = if (cachedTranslation != null) {
+                                        cachedTranslation
+                                    } else {
+                                        val translated = translationEngine.translate(textWithGlossary)
+                                        translationMemory.put(textWithGlossary, translated)
+                                        translated
+                                    }
+
                                     withContext(Dispatchers.Main) {
-                                        overlayManager?.updateTranslationText(translatedText)
+                                        val textToShow = if (settings.isShowOriginalText) {
+                                            "$detectedText\n---\n$finalTranslation"
+                                        } else {
+                                            finalTranslation
+                                        }
+                                        overlayManager?.updateTranslationText(textToShow)
                                     }
                                 }
                             }
@@ -142,7 +172,7 @@ class TranslatorService : Service() {
                     } catch (e: Throwable) {
                         try { currentImage.close() } catch (_: Exception) {}
                     } finally {
-                        delay(1200) // فاصل زمني 1.2 ثانية لتخفيف الضغط على المعالج والذاكرة
+                        delay(settings.captureInterval)
                         isProcessing = false
                     }
                 }
