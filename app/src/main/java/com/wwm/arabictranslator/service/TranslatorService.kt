@@ -16,7 +16,9 @@ import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
@@ -46,7 +48,7 @@ class TranslatorService : Service() {
         super.onCreate()
         startForegroundService()
 
-        // إعداد الـ Overlay مع دالة الالتقاط عند الطلب
+        // إعداد الـ Overlay مع تمرير دالة الالتقاط عند الطلب
         overlayManager = OverlayManager(this) {
             captureAndTranslate()
         }
@@ -69,6 +71,15 @@ class TranslatorService : Service() {
             val mpManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             mediaProjection = mpManager.getMediaProjection(resultCode, data)
 
+            // تسجيل MediaProjection Callback كشرط إجباري في أندرويد 14 قبل إنشاء VirtualDisplay
+            mediaProjection?.registerCallback(object : MediaProjection.Callback() {
+                override fun onStop() {
+                    super.onStop()
+                    virtualDisplay?.release()
+                    imageReader?.close()
+                }
+            }, Handler(Looper.getMainLooper()))
+
             val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val metrics = DisplayMetrics()
             windowManager.defaultDisplay.getRealMetrics(metrics)
@@ -85,12 +96,14 @@ class TranslatorService : Service() {
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 imageReader?.surface, null, null
             )
+
+            overlayManager?.updateTranslationText("المترجم جاهز، اضغط ترجم")
+
         } catch (e: Throwable) {
             overlayManager?.updateTranslationText("خطأ في إعداد الالتقاط: ${e.localizedMessage}")
         }
     }
 
-    // دالة الالتقاط والترجمة بطلب من المستخدم مع حماية شاملة من الانهيار
     private fun captureAndTranslate() {
         serviceScope.launch(Dispatchers.Default) {
             try {
@@ -133,7 +146,6 @@ class TranslatorService : Service() {
                     }
                 }
             } catch (e: Throwable) {
-                // عرض أي خطأ برمجي مباشرة على الشريط بدل إغلاق التطبيق
                 withContext(Dispatchers.Main) {
                     overlayManager?.updateTranslationText("خطأ: ${e.localizedMessage ?: e.javaClass.simpleName}")
                 }
