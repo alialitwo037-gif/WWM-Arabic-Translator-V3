@@ -11,10 +11,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 
-class OverlayManager(
-    private val context: Context,
-    private val onCaptureClick: () -> Unit
-) {
+class OverlayManager(private val context: Context) {
 
     private var windowManager: WindowManager? = null
     private var containerView: LinearLayout? = null
@@ -29,32 +26,17 @@ class OverlayManager(
         containerView = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             setBackgroundColor(Color.parseColor("#DD000000"))
-            setPadding(20, 15, 20, 15)
-            gravity = Gravity.CENTER_VERTICAL
+            setPadding(30, 20, 30, 20)
+            gravity = Gravity.CENTER
         }
 
-        // زر الالتقاط والترجمة
-        val captureBtn = TextView(context).apply {
-            text = " 🔍 ترجم "
-            setTextColor(Color.BLACK)
-            setBackgroundColor(Color.YELLOW)
-            setPadding(25, 15, 25, 15)
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14f)
-            setOnClickListener {
-                onCaptureClick()
-            }
-        }
-
-        // نص الترجمة
         textView = TextView(context).apply {
-            text = "اضغط ترجم للبدء..."
-            setTextColor(Color.WHITE)
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 15f)
-            setPadding(20, 0, 10, 0)
+            text = "WWM Translator Ready..."
+            setTextColor(Color.YELLOW)
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16f)
             textDirection = View.TEXT_DIRECTION_RTL
         }
 
-        containerView?.addView(captureBtn)
         containerView?.addView(textView)
 
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
