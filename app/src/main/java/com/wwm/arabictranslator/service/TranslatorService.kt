@@ -45,8 +45,8 @@ class TranslatorService : Service() {
     override fun onCreate() {
         super.onCreate()
         startForegroundService()
-        
-        // إعداد الـ Overlay مع تمرير دالة الالتقاط اليدوي
+
+        // إعداد الـ Overlay مع دالة الالتقاط عند الطلب
         overlayManager = OverlayManager(this) {
             captureAndTranslate()
         }
@@ -65,32 +65,43 @@ class TranslatorService : Service() {
     }
 
     private fun setupMediaProjection(resultCode: Int, data: Intent) {
-        val mpManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        mediaProjection = mpManager.getMediaProjection(resultCode, data)
+        try {
+            val mpManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            mediaProjection = mpManager.getMediaProjection(resultCode, data)
 
-        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val metrics = DisplayMetrics()
-        windowManager.defaultDisplay.getRealMetrics(metrics)
+            val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val metrics = DisplayMetrics()
+            windowManager.defaultDisplay.getRealMetrics(metrics)
 
-        screenWidth = metrics.widthPixels
-        screenHeight = metrics.heightPixels
-        screenDensity = metrics.densityDpi
+            screenWidth = metrics.widthPixels
+            screenHeight = metrics.heightPixels
+            screenDensity = metrics.densityDpi
 
-        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
+            imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
 
-        virtualDisplay = mediaProjection?.createVirtualDisplay(
-            "ScreenCapture",
-            screenWidth, screenHeight, screenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            imageReader?.surface, null, null
-        )
+            virtualDisplay = mediaProjection?.createVirtualDisplay(
+                "ScreenCapture",
+                screenWidth, screenHeight, screenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                imageReader?.surface, null, null
+            )
+        } catch (e: Throwable) {
+            overlayManager?.updateTranslationText("خطأ في إعداد الالتقاط: ${e.localizedMessage}")
+        }
     }
 
-    // دالة الالتقاط والترجمة بطلب من المستخدم فقط
+    // دالة الالتقاط والترجمة بطلب من المستخدم مع حماية شاملة من الانهيار
     private fun captureAndTranslate() {
         serviceScope.launch(Dispatchers.Default) {
             try {
-                val image = imageReader?.acquireLatestImage() ?: return@launch
+                val image = imageReader?.acquireLatestImage()
+                if (image == null) {
+                    withContext(Dispatchers.Main) {
+                        overlayManager?.updateTranslationText("لم يتم التقاط صورة (Image is null)")
+                    }
+                    return@launch
+                }
+
                 val planes = image.planes
                 val buffer = planes[0].buffer
                 val pixelStride = planes[0].pixelStride
@@ -115,10 +126,17 @@ class TranslatorService : Service() {
                                 overlayManager?.updateTranslationText(translatedText)
                             }
                         }
+                    } else {
+                        serviceScope.launch(Dispatchers.Main) {
+                            overlayManager?.updateTranslationText("لم يتم العثور على نص")
+                        }
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (e: Throwable) {
+                // عرض أي خطأ برمجي مباشرة على الشريط بدل إغلاق التطبيق
+                withContext(Dispatchers.Main) {
+                    overlayManager?.updateTranslationText("خطأ: ${e.localizedMessage ?: e.javaClass.simpleName}")
+                }
             }
         }
     }
