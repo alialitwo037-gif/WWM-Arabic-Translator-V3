@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
+import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -76,42 +77,45 @@ class TranslatorService : Service() {
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
 
         imageReader?.setOnImageAvailableListener({ reader ->
-            if (isProcessing) return@setOnImageAvailableListener
+            if (isProcessing) {
+                // إغلاق الإطارات التلقائية الفائضة لمنع الذاكرة من الامتلاء
+                val image = try { reader.acquireLatestImage() } catch (e: Exception) { null }
+                image?.close()
+                return@setOnImageAvailableListener
+            }
 
-            val image = try {
-                reader.acquireLatestImage()
+            var image: Image? = null
+            try {
+                image = reader.acquireLatestImage()
             } catch (e: Exception) {
-                null
-            } ?: return@setOnImageAvailableListener
+                image = null
+            }
+
+            if (image == null) return@setOnImageAvailableListener
 
             isProcessing = true
 
+            val currentImage = image
             serviceScope.launch(Dispatchers.Default) {
-                var bitmapToProcess: Bitmap? = null
                 try {
-                    val planes = image.planes
+                    val planes = currentImage.planes
                     val buffer = planes[0].buffer
                     val pixelStride = planes[0].pixelStride
                     val rowStride = planes[0].rowStride
-                    val rowPadding = rowStride - pixelStride * image.width
+                    val rowPadding = rowStride - pixelStride * width
 
                     val bitmap = Bitmap.createBitmap(
-                        image.width + rowPadding / pixelStride,
-                        image.height,
+                        width + rowPadding / pixelStride,
+                        height,
                         Bitmap.Config.ARGB_8888
                     )
                     bitmap.copyPixelsFromBuffer(buffer)
-                    image.close() // غلق الصورة فوراً بعد نسخ البكسلات بأمان
+                    currentImage.close()
 
-                    bitmapToProcess = bitmap
-                } catch (e: Exception) {
-                    try { image.close() } catch (_: Exception) {}
-                    isProcessing = false
-                    return@launch
-                }
+                    // اقتصاص العرض الفعلي وإزالة padding الأفقية لضمان مطابقة الأبعاد
+                    val cleanBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
 
-                bitmapToProcess?.let { bmp ->
-                    ocrEngine.processImage(bmp) { detectedText ->
+                    ocrEngine.processImage(cleanBitmap) { detectedText ->
                         if (detectedText.isNotEmpty() && detectedText != lastProcessedText) {
                             lastProcessedText = detectedText
                             serviceScope.launch(Dispatchers.IO) {
@@ -122,10 +126,12 @@ class TranslatorService : Service() {
                             }
                         }
                     }
+                } catch (e: Exception) {
+                    try { currentImage.close() } catch (_: Exception) {}
+                } finally {
+                    delay(1500)
+                    isProcessing = false
                 }
-
-                delay(2000) // التكرار كل ثانيتين لتخفيف العبء على النظام
-                isProcessing = false
             }
         }, Handler(Looper.getMainLooper()))
 
