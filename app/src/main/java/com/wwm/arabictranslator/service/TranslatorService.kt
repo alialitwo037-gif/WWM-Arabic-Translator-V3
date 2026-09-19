@@ -71,7 +71,7 @@ class TranslatorService : Service() {
             val mpManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             mediaProjection = mpManager.getMediaProjection(resultCode, data)
 
-            // شرط أندرويد 14 الأساسي لمنع الكراش
+            // تسجيل MediaProjection Callback الإجباري لمنع الكراش في أندرويد 14
             mediaProjection?.registerCallback(object : MediaProjection.Callback() {
                 override fun onStop() {
                     super.onStop()
@@ -90,7 +90,7 @@ class TranslatorService : Service() {
 
             imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
 
-            // الاستماع المباشر المستمر مع حماية الذاكرة
+            // قراءة البث المباشر تلقائياً
             imageReader?.setOnImageAvailableListener({ reader ->
                 if (isProcessing) {
                     val image = try { reader.acquireLatestImage() } catch (e: Exception) { null }
@@ -142,7 +142,7 @@ class TranslatorService : Service() {
                     } catch (e: Throwable) {
                         try { currentImage.close() } catch (_: Exception) {}
                     } finally {
-                        delay(1200) // فاصل زمني سلس ومريح بين كل التقاط
+                        delay(1200) // فاصل زمني 1.2 ثانية لتخفيف الضغط على المعالج والذاكرة
                         isProcessing = false
                     }
                 }
