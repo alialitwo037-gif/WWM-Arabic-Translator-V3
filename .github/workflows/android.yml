@@ -24,17 +24,11 @@ jobs:
       with:
         gradle-version: '8.2'
 
-    - name: Build with Gradle (Continue on Error)
-      run: gradle assembleDebug --no-daemon --continue --stacktrace
+    - name: Build with Gradle
+      run: gradle assembleDebug --no-daemon
 
-    - name: Diagnose Missing Files & Resource Issues
-      if: failure()
-      run: |
-        echo "=================================================="
-        echo "         Diagnostic & Comprehensive Report        "
-        echo "=================================================="
-        echo "Checking required structure and files:"
-        [ -f "app/src/main/AndroidManifest.xml" ] && echo "✔ AndroidManifest.xml" || echo "✖ MISSING: AndroidManifest.xml"
-        [ -f "app/src/main/res/layout/activity_main.xml" ] && echo "✔ activity_main.xml" || echo "✖ MISSING: activity_main.xml"
-        [ -f "app/src/main/res/values/styles.xml" ] || [ -f "app/src/main/res/values/themes.xml" ] && echo "✔ Theme file exists" || echo "✖ MISSING: app/src/main/res/values/themes.xml"
-        [ -f "app/src/main/java/com/wwm/arabictranslator/MainActivity.kt" ] && echo "✔ MainActivity.kt" || echo "✖ MISSING: MainActivity.kt"
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
