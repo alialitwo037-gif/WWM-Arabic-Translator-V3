@@ -24,7 +24,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
-          add-job-summary-via-pr-comment: 'never'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Full Diagnostic Build Check
         run: ./gradlew assembleDebug --stacktrace --info
