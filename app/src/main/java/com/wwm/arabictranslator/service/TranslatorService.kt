@@ -17,8 +17,8 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Handler
-import android.os.Looper
 import android.os.IBinder
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
@@ -39,7 +39,7 @@ class TranslatorService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.Main + Job())
 
     private var lastProcessedText = ""
-    private var isProcessing = false
+    @Volatile private var isProcessing = false
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -74,13 +74,20 @@ class TranslatorService : Service() {
         val density = metrics.densityDpi
 
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-        
+
         imageReader?.setOnImageAvailableListener({ reader ->
             if (isProcessing) return@setOnImageAvailableListener
-            val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
+
+            val image = try {
+                reader.acquireLatestImage()
+            } catch (e: Exception) {
+                null
+            } ?: return@setOnImageAvailableListener
 
             isProcessing = true
-            serviceScope.launch(Dispatchers.IO) {
+
+            serviceScope.launch(Dispatchers.Default) {
+                var bitmapToProcess: Bitmap? = null
                 try {
                     val planes = image.planes
                     val buffer = planes[0].buffer
@@ -94,24 +101,31 @@ class TranslatorService : Service() {
                         Bitmap.Config.ARGB_8888
                     )
                     bitmap.copyPixelsFromBuffer(buffer)
-                    image.close()
+                    image.close() // غلق الصورة فوراً بعد نسخ البكسلات بأمان
 
-                    // معالجة الـ OCR للترجمة
-                    ocrEngine.processImage(bitmap) { detectedText ->
+                    bitmapToProcess = bitmap
+                } catch (e: Exception) {
+                    try { image.close() } catch (_: Exception) {}
+                    isProcessing = false
+                    return@launch
+                }
+
+                bitmapToProcess?.let { bmp ->
+                    ocrEngine.processImage(bmp) { detectedText ->
                         if (detectedText.isNotEmpty() && detectedText != lastProcessedText) {
                             lastProcessedText = detectedText
-                            serviceScope.launch {
+                            serviceScope.launch(Dispatchers.IO) {
                                 val translatedText = translationEngine.translate(detectedText)
-                                overlayManager?.updateTranslationText(translatedText)
+                                withContext(Dispatchers.Main) {
+                                    overlayManager?.updateTranslationText(translatedText)
+                                }
                             }
                         }
                     }
-                } catch (e: Exception) {
-                    image.close()
-                } finally {
-                    delay(1500) // فترات زمنية متزنة بين القراءات لتخفيف الضغط
-                    isProcessing = false
                 }
+
+                delay(2000) // التكرار كل ثانيتين لتخفيف العبء على النظام
+                isProcessing = false
             }
         }, Handler(Looper.getMainLooper()))
 
