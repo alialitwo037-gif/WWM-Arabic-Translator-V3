@@ -5,67 +5,95 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.view.Gravity
-import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import com.wwm.arabictranslator.R
 
 class OverlayManager(private val context: Context) {
 
-    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private var overlayView: View? = null
-    private var tvTranslation: TextView? = null
+    private var windowManager: WindowManager? = null
+    private var overlayView: TextView? = null
+    private var layoutParams: WindowManager.LayoutParams? = null
 
     fun showOverlay() {
         if (overlayView != null) return
 
-        val layoutParamsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        overlayView = TextView(context).apply {
+            text = "...WWM Translator Ready"
+            setTextColor(Color.YELLOW)
+            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16f)
+            setBackgroundColor(Color.parseColor("#CC000000")) // خلفية سوداء شبه شفافة
+            setPadding(32, 20, 32, 20)
+            gravity = Gravity.CENTER
+            textDirection = View.TEXT_DIRECTION_RTL // محاذاة النص العربي من اليمين لليسار
+        }
+
+        val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
             @Suppress("DEPRECATION")
             WindowManager.LayoutParams.TYPE_PHONE
         }
 
-        val params = WindowManager.LayoutParams(
+        layoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            layoutParamsType,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            type,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            y = 150
+            y = 100
         }
 
-        val tv = TextView(context).apply {
-            text = "WWM Translator Ready..."
-            setTextColor(Color.YELLOW)
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 18f)
-            setBackgroundColor(Color.parseColor("#80000000"))
-            setPadding(32, 16, 32, 16)
-            textDirection = View.TEXT_DIRECTION_RTL
-            gravity = Gravity.CENTER
-        }
+        // إمكانية سحب وتحريك الشريط على الشاشة باليد
+        setupTouchListener()
 
-        tvTranslation = tv
-        overlayView = tv
-        windowManager.addView(overlayView, params)
+        try {
+            windowManager?.addView(overlayView, layoutParams)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    fun updateTranslationText(text: String) {
-        tvTranslation?.post {
-            tvTranslation?.text = text
+    private fun setupTouchListener() {
+        var initialY = 0
+        var initialTouchY = 0f
+
+        overlayView?.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialY = layoutParams?.y ?: 0
+                    initialTouchY = event.rawY
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    layoutParams?.y = initialY - (event.rawY - initialTouchY).toInt()
+                    windowManager?.updateViewLayout(overlayView, layoutParams)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    fun updateTranslationText(translatedText: String) {
+        overlayView?.post {
+            overlayView?.text = translatedText
         }
     }
 
     fun removeOverlay() {
-        overlayView?.let {
-            windowManager.removeView(it)
+        if (overlayView != null && windowManager != null) {
+            try {
+                windowManager?.removeView(overlayView)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             overlayView = null
-            tvTranslation = null
         }
     }
 }
