@@ -10,31 +10,32 @@ class OcrEngine {
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
     fun processImage(bitmap: Bitmap, onTextFound: (String) -> Unit) {
-        // اقتصاص الجزء السفلي من الشاشة (منطقة الحوارات والنصوص الرئيسية)
-        // يبدأ من 60% من ارتفاع الشاشة حتى 95%
-        val startY = (bitmap.height * 0.60).toInt()
-        val cropHeight = (bitmap.height * 0.35).toInt()
+        try {
+            // اقتصاص آمن لمنطقة الحوارات أسفل الشاشة
+            val startY = (bitmap.height * 0.55).toInt()
+            val cropHeight = (bitmap.height * 0.40).toInt()
+            val validHeight = if (startY + cropHeight <= bitmap.height) cropHeight else bitmap.height - startY
 
-        val croppedBitmap = try {
-            Bitmap.createBitmap(bitmap, 0, startY, bitmap.width, cropHeight)
-        } catch (e: Exception) {
-            bitmap // fallback إذا حدث خطأ في الأبعاد
-        }
+            val croppedBitmap = if (startY >= 0 && validHeight > 0) {
+                Bitmap.createBitmap(bitmap, 0, startY, bitmap.width, validHeight)
+            } else {
+                bitmap
+            }
 
-        val image = InputImage.fromBitmap(croppedBitmap, 0)
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                val detectedText = visionText.text.trim()
-                if (detectedText.isNotEmpty()) {
-                    val cleanedText = cleanText(detectedText)
-                    if (cleanedText.isNotEmpty()) {
-                        onTextFound(cleanedText)
+            val image = InputImage.fromBitmap(croppedBitmap, 0)
+            recognizer.process(image)
+                .addOnSuccessListener { visionText ->
+                    val detectedText = visionText.text.trim()
+                    if (detectedText.isNotEmpty()) {
+                        val cleanedText = cleanText(detectedText)
+                        if (cleanedText.isNotEmpty()) {
+                            onTextFound(cleanedText)
+                        }
                     }
                 }
-            }
-            .addOnFailureListener {
-                // Ignore frame OCR errors
-            }
+        } catch (e: Exception) {
+            // تجاهل أي خطأ في أبعاد الصورة لمنع الكراش
+        }
     }
 
     private fun cleanText(rawText: String): String {
