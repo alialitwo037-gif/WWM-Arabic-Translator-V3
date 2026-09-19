@@ -12,14 +12,11 @@ import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
-import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
@@ -39,15 +36,20 @@ class TranslatorService : Service() {
     private val translationEngine = TranslationEngine()
     private val serviceScope = CoroutineScope(Dispatchers.Main + Job())
 
-    private var lastProcessedText = ""
-    @Volatile private var isProcessing = false
+    private var screenWidth = 0
+    private var screenHeight = 0
+    private var screenDensity = 0
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
         startForegroundService()
-        overlayManager = OverlayManager(this)
+        
+        // إعداد الـ Overlay مع تمرير دالة الالتقاط اليدوي
+        overlayManager = OverlayManager(this) {
+            captureAndTranslate()
+        }
         overlayManager?.showOverlay()
     }
 
@@ -70,77 +72,55 @@ class TranslatorService : Service() {
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getRealMetrics(metrics)
 
-        val width = metrics.widthPixels
-        val height = metrics.heightPixels
-        val density = metrics.densityDpi
+        screenWidth = metrics.widthPixels
+        screenHeight = metrics.heightPixels
+        screenDensity = metrics.densityDpi
 
-        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-
-        imageReader?.setOnImageAvailableListener({ reader ->
-            if (isProcessing) {
-                // إغلاق الإطارات التلقائية الفائضة لمنع الذاكرة من الامتلاء
-                val image = try { reader.acquireLatestImage() } catch (e: Exception) { null }
-                image?.close()
-                return@setOnImageAvailableListener
-            }
-
-            var image: Image? = null
-            try {
-                image = reader.acquireLatestImage()
-            } catch (e: Exception) {
-                image = null
-            }
-
-            if (image == null) return@setOnImageAvailableListener
-
-            isProcessing = true
-
-            val currentImage = image
-            serviceScope.launch(Dispatchers.Default) {
-                try {
-                    val planes = currentImage.planes
-                    val buffer = planes[0].buffer
-                    val pixelStride = planes[0].pixelStride
-                    val rowStride = planes[0].rowStride
-                    val rowPadding = rowStride - pixelStride * width
-
-                    val bitmap = Bitmap.createBitmap(
-                        width + rowPadding / pixelStride,
-                        height,
-                        Bitmap.Config.ARGB_8888
-                    )
-                    bitmap.copyPixelsFromBuffer(buffer)
-                    currentImage.close()
-
-                    // اقتصاص العرض الفعلي وإزالة padding الأفقية لضمان مطابقة الأبعاد
-                    val cleanBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
-
-                    ocrEngine.processImage(cleanBitmap) { detectedText ->
-                        if (detectedText.isNotEmpty() && detectedText != lastProcessedText) {
-                            lastProcessedText = detectedText
-                            serviceScope.launch(Dispatchers.IO) {
-                                val translatedText = translationEngine.translate(detectedText)
-                                withContext(Dispatchers.Main) {
-                                    overlayManager?.updateTranslationText(translatedText)
-                                }
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    try { currentImage.close() } catch (_: Exception) {}
-                } finally {
-                    delay(1500)
-                    isProcessing = false
-                }
-            }
-        }, Handler(Looper.getMainLooper()))
+        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
 
         virtualDisplay = mediaProjection?.createVirtualDisplay(
             "ScreenCapture",
-            width, height, density,
+            screenWidth, screenHeight, screenDensity,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             imageReader?.surface, null, null
         )
+    }
+
+    // دالة الالتقاط والترجمة بطلب من المستخدم فقط
+    private fun captureAndTranslate() {
+        serviceScope.launch(Dispatchers.Default) {
+            try {
+                val image = imageReader?.acquireLatestImage() ?: return@launch
+                val planes = image.planes
+                val buffer = planes[0].buffer
+                val pixelStride = planes[0].pixelStride
+                val rowStride = planes[0].rowStride
+                val rowPadding = rowStride - pixelStride * screenWidth
+
+                val bitmap = Bitmap.createBitmap(
+                    screenWidth + rowPadding / pixelStride,
+                    screenHeight,
+                    Bitmap.Config.ARGB_8888
+                )
+                bitmap.copyPixelsFromBuffer(buffer)
+                image.close()
+
+                val cleanBitmap = Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight)
+
+                ocrEngine.processImage(cleanBitmap) { detectedText ->
+                    if (detectedText.isNotEmpty()) {
+                        serviceScope.launch(Dispatchers.IO) {
+                            val translatedText = translationEngine.translate(detectedText)
+                            withContext(Dispatchers.Main) {
+                                overlayManager?.updateTranslationText(translatedText)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun startForegroundService() {
@@ -157,7 +137,7 @@ class TranslatorService : Service() {
 
         val notification: Notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("WWM Arabic Translator")
-            .setContentText("المترجم يقرأ الشاشة الآن...")
+            .setContentText("المترجم جاهز للتقاط الشاشة...")
             .setSmallIcon(android.R.drawable.sym_def_app_icon)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
