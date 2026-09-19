@@ -11,13 +11,12 @@ class OcrEngine {
 
     fun processImage(bitmap: Bitmap, onTextFound: (String) -> Unit) {
         try {
-            // اقتصاص آمن لمنطقة الحوارات أسفل الشاشة
-            val startY = (bitmap.height * 0.55).toInt()
-            val cropHeight = (bitmap.height * 0.40).toInt()
-            val validHeight = if (startY + cropHeight <= bitmap.height) cropHeight else bitmap.height - startY
+            // اقتطاع منطقة الحوارات أسفل الشاشة (بين 60% إلى 95% من ارتفاع الشاشة)
+            val startY = (bitmap.height * 0.60).toInt()
+            val cropHeight = (bitmap.height * 0.35).toInt()
 
-            val croppedBitmap = if (startY >= 0 && validHeight > 0) {
-                Bitmap.createBitmap(bitmap, 0, startY, bitmap.width, validHeight)
+            val croppedBitmap = if (startY + cropHeight <= bitmap.height) {
+                Bitmap.createBitmap(bitmap, 0, startY, bitmap.width, cropHeight)
             } else {
                 bitmap
             }
@@ -25,23 +24,21 @@ class OcrEngine {
             val image = InputImage.fromBitmap(croppedBitmap, 0)
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
-                    val detectedText = visionText.text.trim()
-                    if (detectedText.isNotEmpty()) {
-                        val cleanedText = cleanText(detectedText)
-                        if (cleanedText.isNotEmpty()) {
-                            onTextFound(cleanedText)
-                        }
+                    val rawText = visionText.text
+                    val cleaned = cleanText(rawText)
+                    if (cleaned.isNotEmpty()) {
+                        onTextFound(cleaned)
                     }
                 }
         } catch (e: Exception) {
-            // تجاهل أي خطأ في أبعاد الصورة لمنع الكراش
+            e.printStackTrace()
         }
     }
 
     private fun cleanText(rawText: String): String {
         return rawText.lines()
             .map { it.trim() }
-            .filter { it.length > 2 }
+            .filter { line -> line.length > 2 && line.any { it.isLetter() } }
             .joinToString(" ")
     }
 }
