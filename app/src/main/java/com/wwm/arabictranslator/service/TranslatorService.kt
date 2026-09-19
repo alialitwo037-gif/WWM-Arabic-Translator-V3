@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
+import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -42,16 +43,15 @@ class TranslatorService : Service() {
     private var screenHeight = 0
     private var screenDensity = 0
 
+    private var lastProcessedText = ""
+    @Volatile private var isProcessing = false
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
         startForegroundService()
-
-        // إعداد الـ Overlay مع تمرير دالة الالتقاط عند الطلب
-        overlayManager = OverlayManager(this) {
-            captureAndTranslate()
-        }
+        overlayManager = OverlayManager(this)
         overlayManager?.showOverlay()
     }
 
@@ -71,7 +71,7 @@ class TranslatorService : Service() {
             val mpManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             mediaProjection = mpManager.getMediaProjection(resultCode, data)
 
-            // تسجيل MediaProjection Callback كشرط إجباري في أندرويد 14 قبل إنشاء VirtualDisplay
+            // شرط أندرويد 14 الأساسي لمنع الكراش
             mediaProjection?.registerCallback(object : MediaProjection.Callback() {
                 override fun onStop() {
                     super.onStop()
@@ -90,6 +90,64 @@ class TranslatorService : Service() {
 
             imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2)
 
+            // الاستماع المباشر المستمر مع حماية الذاكرة
+            imageReader?.setOnImageAvailableListener({ reader ->
+                if (isProcessing) {
+                    val image = try { reader.acquireLatestImage() } catch (e: Exception) { null }
+                    image?.close()
+                    return@setOnImageAvailableListener
+                }
+
+                var image: Image? = null
+                try {
+                    image = reader.acquireLatestImage()
+                } catch (e: Exception) {
+                    image = null
+                }
+
+                if (image == null) return@setOnImageAvailableListener
+
+                isProcessing = true
+                val currentImage = image
+
+                serviceScope.launch(Dispatchers.Default) {
+                    try {
+                        val planes = currentImage.planes
+                        val buffer = planes[0].buffer
+                        val pixelStride = planes[0].pixelStride
+                        val rowStride = planes[0].rowStride
+                        val rowPadding = rowStride - pixelStride * screenWidth
+
+                        val bitmap = Bitmap.createBitmap(
+                            screenWidth + rowPadding / pixelStride,
+                            screenHeight,
+                            Bitmap.Config.ARGB_8888
+                        )
+                        bitmap.copyPixelsFromBuffer(buffer)
+                        currentImage.close()
+
+                        val cleanBitmap = Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight)
+
+                        ocrEngine.processImage(cleanBitmap) { detectedText ->
+                            if (detectedText.isNotEmpty() && detectedText != lastProcessedText) {
+                                lastProcessedText = detectedText
+                                serviceScope.launch(Dispatchers.IO) {
+                                    val translatedText = translationEngine.translate(detectedText)
+                                    withContext(Dispatchers.Main) {
+                                        overlayManager?.updateTranslationText(translatedText)
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e: Throwable) {
+                        try { currentImage.close() } catch (_: Exception) {}
+                    } finally {
+                        delay(1200) // فاصل زمني سلس ومريح بين كل التقاط
+                        isProcessing = false
+                    }
+                }
+            }, Handler(Looper.getMainLooper()))
+
             virtualDisplay = mediaProjection?.createVirtualDisplay(
                 "ScreenCapture",
                 screenWidth, screenHeight, screenDensity,
@@ -97,59 +155,10 @@ class TranslatorService : Service() {
                 imageReader?.surface, null, null
             )
 
-            overlayManager?.updateTranslationText("المترجم جاهز، اضغط ترجم")
+            overlayManager?.updateTranslationText("جاري قراءة الشاشة تلقائياً...")
 
         } catch (e: Throwable) {
             overlayManager?.updateTranslationText("خطأ في إعداد الالتقاط: ${e.localizedMessage}")
-        }
-    }
-
-    private fun captureAndTranslate() {
-        serviceScope.launch(Dispatchers.Default) {
-            try {
-                val image = imageReader?.acquireLatestImage()
-                if (image == null) {
-                    withContext(Dispatchers.Main) {
-                        overlayManager?.updateTranslationText("لم يتم التقاط صورة (Image is null)")
-                    }
-                    return@launch
-                }
-
-                val planes = image.planes
-                val buffer = planes[0].buffer
-                val pixelStride = planes[0].pixelStride
-                val rowStride = planes[0].rowStride
-                val rowPadding = rowStride - pixelStride * screenWidth
-
-                val bitmap = Bitmap.createBitmap(
-                    screenWidth + rowPadding / pixelStride,
-                    screenHeight,
-                    Bitmap.Config.ARGB_8888
-                )
-                bitmap.copyPixelsFromBuffer(buffer)
-                image.close()
-
-                val cleanBitmap = Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight)
-
-                ocrEngine.processImage(cleanBitmap) { detectedText ->
-                    if (detectedText.isNotEmpty()) {
-                        serviceScope.launch(Dispatchers.IO) {
-                            val translatedText = translationEngine.translate(detectedText)
-                            withContext(Dispatchers.Main) {
-                                overlayManager?.updateTranslationText(translatedText)
-                            }
-                        }
-                    } else {
-                        serviceScope.launch(Dispatchers.Main) {
-                            overlayManager?.updateTranslationText("لم يتم العثور على نص")
-                        }
-                    }
-                }
-            } catch (e: Throwable) {
-                withContext(Dispatchers.Main) {
-                    overlayManager?.updateTranslationText("خطأ: ${e.localizedMessage ?: e.javaClass.simpleName}")
-                }
-            }
         }
     }
 
@@ -167,7 +176,7 @@ class TranslatorService : Service() {
 
         val notification: Notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("WWM Arabic Translator")
-            .setContentText("المترجم جاهز للتقاط الشاشة...")
+            .setContentText("المترجم يعمل في الخلفية...")
             .setSmallIcon(android.R.drawable.sym_def_app_icon)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
