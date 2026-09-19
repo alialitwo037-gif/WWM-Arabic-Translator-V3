@@ -62,7 +62,7 @@ class TranslatorService : Service() {
         settings = TranslatorSettings(this)
         glossaryManager = GlossaryManager(this)
         translationMemory = TranslationMemory(this)
-        
+
         startForegroundService()
         overlayManager = OverlayManager(this)
         overlayManager?.showOverlay()
@@ -145,10 +145,10 @@ class TranslatorService : Service() {
                                 aiEngine.updateLastOcrText(detectedText)
 
                                 serviceScope.launch(Dispatchers.IO) {
-                                    // 1. استخدام القاموس أولاً
+                                    // 1. تطبيق القاموس
                                     val textWithGlossary = glossaryManager.applyGlossary(detectedText)
-                                    
-                                    // 2. الفحص داخل ذاكرة الترجمة
+
+                                    // 2. الفحص في ذاكرة الترجمة المحفوظة
                                     val cachedTranslation = translationMemory.get(textWithGlossary)
                                     val finalTranslation = if (cachedTranslation != null) {
                                         cachedTranslation
