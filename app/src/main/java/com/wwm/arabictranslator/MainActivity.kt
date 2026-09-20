@@ -10,6 +10,7 @@ import com.wwm.arabictranslator.ai.WwmAiActivity
 import com.wwm.arabictranslator.glossary.GlossaryActivity
 import com.wwm.arabictranslator.memory.TranslationMemoryActivity
 import com.wwm.arabictranslator.service.TranslatorService
+import com.wwm.arabictranslator.settings.SettingsActivity
 import com.wwm.arabictranslator.ui.OverlaySettingsActivity
 
 class MainActivity : AppCompatActivity() {
@@ -58,9 +59,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // التنقل إلى شاشة إعدادات Overlay
+        // التنقل إلى شاشة الإعدادات العامة
         btnSettings.setOnClickListener {
-            val intent = Intent(this, OverlaySettingsActivity::class.java)
+            val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
     }
