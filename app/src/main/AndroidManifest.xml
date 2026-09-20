@@ -26,11 +26,17 @@
             </intent-filter>
         </activity>
 
-        <!-- شاشة WWM AI المضافة حديثاً -->
+        <!-- شاشة WWM AI -->
         <activity
             android:name=".ai.WwmAiActivity"
             android:exported="false"
             android:label="WWM AI" />
+
+        <!-- شاشة قاموس المصطلحات المضافة حديثاً -->
+        <activity
+            android:name=".glossary.GlossaryActivity"
+            android:exported="false"
+            android:label="قاموس المصطلحات" />
 
         <!-- خدمة الترجمة الشاشة والتراكب (Overlay Service) -->
         <service
