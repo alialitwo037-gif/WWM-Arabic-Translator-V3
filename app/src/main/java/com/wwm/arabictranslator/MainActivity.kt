@@ -1,42 +1,43 @@
 package com.wwm.arabictranslator
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.wwm.arabictranslator.utils.UiGenerator
 
 class MainActivity : AppCompatActivity() {
+
+    private var tvStatus: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val tvStatus = findViewById<TextView>(R.id.tvStatus)
+        tvStatus = findViewById(R.id.tvStatus)
 
-        // تطبيق التدرجات والأشكال الذكية برمجياً بأمان
-        val headerCard = findViewById<LinearLayout>(R.id.headerCardContainer)
-        headerCard?.let {
-            UiGenerator.applyHeaderGradient(it)
-        }
-
-        // --- الزر رقم 1: بدء الترجمة ---
+        // --- الزر الأول: بدء الترجمة الفورية بشكل حقيقي وعميق ---
         findViewById<Button>(R.id.btnStartTranslation)?.setOnClickListener {
-            if (!android.provider.Settings.canDrawOverlays(this)) {
+            if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "يرجى منح إذن العرض فوق التطبيقات لتمكين الترجمة", Toast.LENGTH_LONG).show()
                 val intent = Intent(
-                    android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    android.net.Uri.parse("package:$packageName")
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
                 )
                 startActivity(intent)
             } else {
-                Toast.makeText(this, "جاري بدء الترجمة...", Toast.LENGTH_SHORT).show()
-                tvStatus?.text = "الحالة: تعمل"
-                val serviceIntent = Intent(this, TranslationService::class.java)
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Toast.makeText(this, "جاري تفعيل الترجمة الفورية...", Toast.LENGTH_SHORT).show()
+                tvStatus?.text = "الحالة: تعمل بنجاح"
+                
+                // إرسال أمر البدء الحقيقي للخدمة الخلفية
+                val serviceIntent = Intent(this, TranslationService::class.java).apply {
+                    action = TranslationService.ACTION_START_TRANSLATION
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(serviceIntent)
                 } else {
                     startService(serviceIntent)
@@ -44,42 +45,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // --- الزر رقم 2: إيقاف الترجمة ---
+        // --- الزر الثاني: إيقاف الترجمة الفورية وتنظيف الذاكرة بشكل كامل ---
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
-            Toast.makeText(this, "تم إرسال أمر إيقاف الترجمة", Toast.LENGTH_SHORT).show()
-            tvStatus?.text = "الحالة: متوقف"
-            val serviceIntent = Intent(this, TranslationService::class.java)
-            stopService(serviceIntent)
-        }
-
-        // --- الزر رقم 3: التعرف البصري (OCR) ---
-        findViewById<Button>(R.id.btnOcrCapture)?.setOnClickListener {
-            Toast.makeText(this, "جاري التقاط الشاشة لتحليل النصوص (OCR)...", Toast.LENGTH_SHORT).show()
-            val ocrIntent = Intent(this, TranslationService::class.java).apply {
-                action = "ACTION_TRIGGER_OCR"
+            Toast.makeText(this, "جاري إيقاف الترجمة...", Toast.LENGTH_SHORT).show()
+            tvStatus?.text = "الحالة: متوقفة"
+            
+            // إرسال أمر الإيقاف الحقيقي للخدمة الخلفية
+            val serviceIntent = Intent(this, TranslationService::class.java).apply {
+                action = TranslationService.ACTION_STOP_TRANSLATION
             }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                startForegroundService(ocrIntent)
-            } else {
-                startService(ocrIntent)
+            startService(serviceIntent)
+        }
+
+        // --- الزر الثالث: التقاط الشاشة وتشغيل التعرف البصري (OCR) والترجمة الفورية الحقيقية ---
+        findViewById<Button>(R.id.btnTriggerOcr)?.setOnClickListener {
+            Toast.makeText(this, "جاري التقاط الشاشة وتحليل النصوص (OCR)...", Toast.LENGTH_SHORT).show()
+            tvStatus?.text = "الحالة: جاري مسح النصوص..."
+            
+            // إرسال أمر الـ OCR الحقيقي للخدمة الخلفية
+            val serviceIntent = Intent(this, TranslationService::class.java).apply {
+                action = TranslationService.ACTION_TRIGGER_OCR
             }
-        }
-
-        // ربط أزرار التنقل بين الشاشات
-        findViewById<Button>(R.id.btnOpenAiSettings)?.setOnClickListener {
-            startActivity(Intent(this, WwmAiActivity::class.java))
-        }
-
-        findViewById<Button>(R.id.btnOpenGlossary)?.setOnClickListener {
-            startActivity(Intent(this, GlossaryActivity::class.java))
-        }
-
-        findViewById<Button>(R.id.btnOpenTranslationMemory)?.setOnClickListener {
-            startActivity(Intent(this, TranslationMemoryActivity::class.java))
-        }
-
-        findViewById<Button>(R.id.btnOpenSettings)?.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startService(serviceIntent)
         }
     }
 }
