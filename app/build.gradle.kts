@@ -48,8 +48,15 @@ dependencies {
     // ML Kit On-Device Translation
     implementation("com.google.mlkit:translate:17.0.2")
 
-    // Coroutines
+    // Coroutines & Play Services Tasks Support (لحل خطأ await)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    // Room Database (لحل خطأ Unresolved reference: room)
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
