@@ -2,21 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wwm.arabictranslator">
 
-    <!-- الأذونات الأساسية للتطبيق والترجمة الشاشة -->
+    <!-- صلاحية الإنترنت للاتصال بـ Gemini API -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- صلاحية إظهار نافذة الترجمة العائمة فوق لعبة Wuthering Waves -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="WWM Arabic Translator"
-        android:roundIcon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Wwm Arabic Translator V3"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
 
-        <!-- الشاشة الرئيسية (شاشة البداية) -->
+        <!-- النشاط الرئيسي للتطبيق -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -26,12 +27,17 @@
             </intent-filter>
         </activity>
 
-        <!-- بقية شاشات التطبيق -->
-        <activity android:name=".WwmAiActivity" android:exported="false" />
-        <activity android:name=".GlossaryActivity" android:exported="false" />
-        <activity android:name=".TranslationMemoryActivity" android:exported="false" />
-        <activity android:name=".OverlaySettingsActivity" android:exported="false" />
-        <activity android:name=".SettingsActivity" android:exported="false" />
+        <!-- الشاشات والنشاطات الفرعية -->
+        <activity android:name=".WwmAiActivity" />
+        <activity android:name=".OverlaySettingsActivity" />
+        <activity android:name=".TranslationMemoryActivity" />
+        <activity android:name=".SettingsActivity" />
+
+        <!-- الخدمة الخلفية للنافذة العائمة -->
+        <service
+            android:name=".WwmOverlayService"
+            android:enabled="true"
+            android:exported="false" />
 
     </application>
 
