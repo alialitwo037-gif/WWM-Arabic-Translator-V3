@@ -1,147 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D1117"
-    android:fillViewport="true">
+    android:background="#121212"
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- الهيدر العلوي -->
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:text="إعدادات الـ Overlay على الشاشة"
+            android:textColor="#FFD700"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp" />
 
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="رجوع"
-                android:src="@android:drawable/ic_menu_revert"
-                app:tint="#C9D1D9" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="إعدادات الترجمة على الشاشة"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-
-        <!-- كارت معاينة الـ Overlay الحية -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="#161B22"
-            app:cardCornerRadius="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/tvPreviewOriginal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="We should go to the south gate before nightfall."
-                    android:textColor="#8B949E"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvPreviewTranslated"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="#80000000"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:text="يجب أن نذهب إلى البوابة الجنوبية قبل حلول الظلام."
-                    android:textColor="#58A6FF"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- حجم الخط -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="حجم الخط"
-            android:textColor="#C9D1D9"
-            android:textSize="14sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
 
         <SeekBar
-            android:id="@+id/sbFontSize"
+            android:id="@+id/seekBarFontSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
             android:max="30"
-            android:progress="18" />
+            android:progress="18"
+            android:layout_marginBottom="20dp" />
 
-        <!-- الشفافية -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="شفافية الخلفية"
-            android:textColor="#C9D1D9"
-            android:textSize="14sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
 
         <SeekBar
-            android:id="@+id/sbOpacity"
+            android:id="@+id/seekBarOpacity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
             android:max="100"
-            android:progress="70" />
+            android:progress="70"
+            android:layout_marginBottom="20dp" />
 
-        <!-- إظهار النص الأصلي -->
-        <RelativeLayout
+        <Switch
+            android:id="@+id/switchShowOriginal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="إظهار النص الأصلي"
-                android:textColor="#C9D1D9"
-                android:textSize="14sp" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/swShowOriginal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:checked="true" />
-        </RelativeLayout>
-
-        <!-- زر الحفظ -->
-        <Button
-            android:id="@+id/btnSaveOverlaySettings"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="#1F6FEB"
-            android:text="حفظ الإعدادات"
+            android:text="إظهار النص الأصلي مع الترجمة"
             android:textColor="#FFFFFF"
-            app:cornerRadius="10dp" />
+            android:textSize="16sp"
+            android:checked="true"
+            android:layout_marginBottom="24dp" />
+
+        <Button
+            android:id="@+id/btnSaveOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#2E7D32"
+            android:text="حفظ إعدادات الـ Overlay"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </ScrollView>
