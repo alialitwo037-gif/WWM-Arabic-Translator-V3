@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // التنقل إلى شاشة إعدادات Overlay / العامة
+        // التنقل إلى شاشة إعدادات Overlay
         btnSettings.setOnClickListener {
             val intent = Intent(this, OverlaySettingsActivity::class.java)
             startActivity(intent)
