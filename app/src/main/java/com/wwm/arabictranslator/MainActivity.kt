@@ -13,13 +13,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // تطبيق التدرجات والأشكال الذكية برمجياً
+        // تطبيق التدرجات والأشكال الذكية برمجياً بأمان
         val headerCard = findViewById<LinearLayout>(R.id.headerCardContainer)
-        if (headerCard != null) {
-            UiGenerator.applyHeaderGradient(headerCard)
+        headerCard?.let {
+            UiGenerator.applyHeaderGradient(it)
         }
 
-        // ربط أزرار التنقل بقية الشاشات
+        // ربط أزرار التنقل بين الشاشات
         findViewById<Button>(R.id.btnOpenAiSettings).setOnClickListener {
             startActivity(Intent(this, WwmAiActivity::class.java))
         }
