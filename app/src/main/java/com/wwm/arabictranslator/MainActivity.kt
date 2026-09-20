@@ -1,18 +1,33 @@
 package com.wwm.arabictranslator
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.wwm.arabictranslator.utils.UiGenerator
 
 class MainActivity : AppCompatActivity() {
 
+    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val tvStatus = findViewById<TextView>(R.id.tvStatus)
 
         // تطبيق التدرجات والأشكال الذكية برمجياً بأمان
         val headerCard = findViewById<LinearLayout>(R.id.headerCardContainer)
@@ -31,6 +46,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             } else {
                 Toast.makeText(this, "جاري بدء الترجمة...", Toast.LENGTH_SHORT).show()
+                tvStatus?.text = "الحالة: تعمل"
                 val serviceIntent = Intent(this, TranslationService::class.java)
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     startForegroundService(serviceIntent)
@@ -40,11 +56,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) مع رسالة تأكيد تفاعلية
+        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) مع فحص منطقي دقيق لحالة الخدمة
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
-            Toast.makeText(this, "تم إيقاف الترجمة بنجاح", Toast.LENGTH_SHORT).show()
-            val serviceIntent = Intent(this, TranslationService::class.java)
-            stopService(serviceIntent)
+            if (isServiceRunning(TranslationService::class.java)) {
+                Toast.makeText(this, "تم إيقاف الترجمة بنجاح", Toast.LENGTH_SHORT).show()
+                tvStatus?.text = "الحالة: متوقف"
+                val serviceIntent = Intent(this, TranslationService::class.java)
+                stopService(serviceIntent)
+            } else {
+                Toast.makeText(this, "الخدمة متوقفة بالفعل", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // ربط أزرار التنقل بين الشاشات
