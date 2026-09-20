@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.wwm.arabictranslator.utils.UiGenerator
 
@@ -19,17 +20,17 @@ class MainActivity : AppCompatActivity() {
             UiGenerator.applyHeaderGradient(it)
         }
 
-        // ربط وظيفة زر بدء الترجمة (الزر رقم 1)
+        // ربط وظيفة زر بدء الترجمة (الزر رقم 1) مع معالجة UX كاملة وصلاحيات النافذة العائمة
         findViewById<Button>(R.id.btnStartTranslation)?.setOnClickListener {
-            // التحقق من صلاحيات النافذة العائمة (Overlay Permission) بأمان
             if (!android.provider.Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "يرجى منح إذن العرض فوق التطبيقات لتمكين الترجمة", Toast.LENGTH_LONG).show()
                 val intent = Intent(
                     android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     android.net.Uri.parse("package:$packageName")
                 )
                 startActivity(intent)
             } else {
-                // بدء خدمة الترجمة العائمة
+                Toast.makeText(this, "جاري بدء الترجمة...", Toast.LENGTH_SHORT).show()
                 val serviceIntent = Intent(this, com.wwm.arabictranslator.services.ScreenTranslateService::class.java)
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     startForegroundService(serviceIntent)
@@ -39,8 +40,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ربط وظيفة زر إيقاف الترجمة (الزر المرتبط بالعملية الحالية)
+        // ربط وظيفة زر إيقاف الترجمة
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
+            Toast.makeText(this, "تم إيقاف الترجمة", Toast.LENGTH_SHORT).show()
             val serviceIntent = Intent(this, com.wwm.arabictranslator.services.ScreenTranslateService::class.java)
             stopService(serviceIntent)
         }
