@@ -10,6 +10,7 @@ import com.wwm.arabictranslator.ai.WwmAiActivity
 import com.wwm.arabictranslator.glossary.GlossaryActivity
 import com.wwm.arabictranslator.memory.TranslationMemoryActivity
 import com.wwm.arabictranslator.service.TranslatorService
+import com.wwm.arabictranslator.ui.OverlaySettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,9 +58,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // زر الإعدادات سيتم ربطه بالشاشة القادمة
+        // التنقل إلى شاشة إعدادات Overlay / العامة
         btnSettings.setOnClickListener {
-            Toast.makeText(this, "فتح الإعدادات", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, OverlaySettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 }
