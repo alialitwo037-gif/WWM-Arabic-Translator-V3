@@ -3,7 +3,9 @@ package com.wwm.arabictranslator
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.wwm.arabictranslator.utils.UiGenerator
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,40 +13,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnToggleOverlay = findViewById<Button>(R.id.btnToggleOverlay)
-        val btnOpenAiSettings = findViewById<Button>(R.id.btnOpenAiSettings)
-        val btnOpenGlossary = findViewById<Button>(R.id.btnOpenGlossary)
-        val btnOpenTranslationMemory = findViewById<Button>(R.id.btnOpenTranslationMemory)
-        val btnOpenOverlaySettings = findViewById<Button>(R.id.btnOpenOverlaySettings)
-        val btnOpenSettings = findViewById<Button>(R.id.btnOpenSettings)
-
-        btnToggleOverlay.setOnClickListener {
-            // تشغيل/إيقاف خدمة النافذة العائمة
+        // تطبيق التدرجات والأشكال الذكية برمجياً
+        val headerCard = findViewById<LinearLayout>(R.id.headerCardContainer)
+        if (headerCard != null) {
+            UiGenerator.applyHeaderGradient(headerCard)
         }
 
-        btnOpenAiSettings.setOnClickListener {
+        // ربط أزرار التنقل بقية الشاشات
+        findViewById<Button>(R.id.btnOpenAiSettings).setOnClickListener {
             startActivity(Intent(this, WwmAiActivity::class.java))
         }
 
-        btnOpenGlossary.setOnClickListener {
+        findViewById<Button>(R.id.btnOpenGlossary).setOnClickListener {
             startActivity(Intent(this, GlossaryActivity::class.java))
         }
 
-        btnOpenTranslationMemory.setOnClickListener {
+        findViewById<Button>(R.id.btnOpenTranslationMemory).setOnClickListener {
             startActivity(Intent(this, TranslationMemoryActivity::class.java))
         }
 
-        btnOpenOverlaySettings.setOnClickListener {
-            try {
-                val intent = Intent(this, Class.forName("com.wwm.arabictranslator.OverlaySettingsActivity"))
-                startActivity(intent)
-            } catch (e: ClassNotFoundException) {
-                // في حال كانت الأكتيفيتي بنفس الـ package الحالي
-                startActivity(Intent(this, SettingsActivity::class.java))
-            }
-        }
-
-        btnOpenSettings.setOnClickListener {
+        findViewById<Button>(R.id.btnOpenSettings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
     }
