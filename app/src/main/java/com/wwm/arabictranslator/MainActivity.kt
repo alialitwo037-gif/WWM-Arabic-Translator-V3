@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
             UiGenerator.applyHeaderGradient(it)
         }
 
-        // ربط وظيفة زر بدء الترجمة (الزر رقم 1) بالخدمة الصحيحة TranslationService
+        // ربط وظيفة زر بدء الترجمة (الزر رقم 1)
         findViewById<Button>(R.id.btnStartTranslation)?.setOnClickListener {
             if (!android.provider.Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "يرجى منح إذن العرض فوق التطبيقات لتمكين الترجمة", Toast.LENGTH_LONG).show()
@@ -40,9 +40,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ربط وظيفة زر إيقاف الترجمة بالخدمة الصحيحة
+        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) مع رسالة تأكيد تفاعلية
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
-            Toast.makeText(this, "تم إيقاف الترجمة", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "تم إيقاف الترجمة بنجاح", Toast.LENGTH_SHORT).show()
             val serviceIntent = Intent(this, TranslationService::class.java)
             stopService(serviceIntent)
         }
