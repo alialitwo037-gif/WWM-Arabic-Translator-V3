@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -20,25 +19,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // ----------------------------------------------------
-        // [مقطع مؤقت] فاحص الأخطاء الشامل للتجربة (احذفه لاحقاً)
-        try {
-            Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
-                WwmErrorLogger.logError(this, "FatalCrash", "حدث خطأ مفاجئ أدى لتوقف التطبيق", throwable)
-                android.os.Process.killProcess(android.os.Process.myPid())
-                System.exit(1)
-            }
-
-            val allErrors = WwmErrorLogger.readAllErrors(this)
-            if (allErrors.isNotEmpty() && !allErrors.contains("لا توجد أخطاء مسجلة")) {
-                Toast.zIndexShowOrLog?.let {} // تجنب أي مشاكل صياغة
-                Toast.makeText(this, "توجد أخطاء مسجلة في السجل المحلي", Toast.LENGTH_LONG).show()
-            }
-        } catch (e: Exception) {
-            // تجاهل أخطاء الفاحص المؤقت
-        }
-        // ----------------------------------------------------
 
         // ربط الأزرار الستة بالـ XML
         btnAiSettings = findViewById(R.id.btnAiSettings)
