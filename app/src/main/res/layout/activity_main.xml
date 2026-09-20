@@ -2,195 +2,111 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0B0F19"
-    android:fillViewport="true">
+    android:background="#121212"
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:gravity="center_horizontal">
 
-        <!-- Header Card -->
-        <LinearLayout
-            android:id="@+id/headerCardContainer"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_header_card"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:text="Wwm Arabic Translator V3"
+            android:textColor="#FFD700"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="WWM Arabic Translator V3"
-                android:textColor="#FFFFFF"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="6dp"
-                android:text="مترجم الألعاب التفاعلي"
-                android:textColor="#9CA3AF"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Status & Translation Control Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_status_item"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:text="لوحة التحكم الرئيسية - الأزرار الستة الأولى"
+            android:textColor="#AAAAAA"
+            android:textSize="13sp"
+            android:layout_marginBottom="20dp" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tvStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="الحالة: متوقف"
-                    android:textColor="#10B981"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_dot_green" />
-            </LinearLayout>
-
-            <!-- 1. زر بدء الترجمة -->
-            <Button
-                android:id="@+id/btnStartTranslation"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_primary_button"
-                android:backgroundTint="@null"
-                android:padding="12dp"
-                android:text="بدء الترجمة"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <!-- 2. زر إيقاف الترجمة -->
-            <Button
-                android:id="@+id/btnStopTranslation"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_secondary_button"
-                android:backgroundTint="@null"
-                android:padding="10dp"
-                android:text="إيقاف الترجمة"
-                android:textColor="#9CA3AF"
-                android:textSize="14sp" />
-
-            <!-- فاصل جمالي -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="#1F2937" />
-
-            <!-- 3. زر الـ OCR والتعرف البصري (مع الملصق التوضيحي فوقه) -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginBottom="6dp"
-                android:text="استخراج النصوص من الشاشة بالذكاء الاصطناعي"
-                android:textColor="#9CA3AF"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btnOcrCapture"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/bg_secondary_button"
-                android:backgroundTint="@null"
-                android:padding="10dp"
-                android:text="التعرف البصري (OCR)"
-                android:textColor="#38BDF8"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <!-- Navigation Options List -->
-        <LinearLayout
+        <!-- 1. إعدادات المساعد والذكاء الاصطناعي -->
+        <Button
+            android:id="@+id/btnAiSettings"
             android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#1E1E1E"
+            android:text="1. إعدادات المساعد والذكاء الاصطناعي"
+            android:textColor="#FFFFFF"
+            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 2. إدارة الذاكرة والمفاتيح -->
+        <Button
+            android:id="@+id/btnPreferencesHelper"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#1E1E1E"
+            android:text="2. إدارة الذاكرة ومفاتيح الربط"
+            android:textColor="#FFFFFF"
+            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 3. واجهة الترجمة المتقدمة -->
+        <Button
+            android:id="@+id/btnTranslationInterface"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#1E1E1E"
+            android:text="3. واجهة الترجمة المتقدمة"
+            android:textColor="#FFFFFF"
+            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 4. إعدادات الـ Overlay للشاشة -->
+        <Button
+            android:id="@+id/btnOverlaySettings"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#1E1E1E"
+            android:text="4. إعدادات الـ Overlay والشاشة"
+            android:textColor="#FFFFFF"
+            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 5. ذاكرة الترجمة والمصطلحات -->
+        <Button
+            android:id="@+id/btnTranslationMemory"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#1E1E1E"
+            android:text="5. ذاكرة الترجمة والمصطلحات"
+            android:textColor="#FFFFFF"
+            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 6. الإعدادات العامة -->
+        <Button
+            android:id="@+id/btnGeneralSettings"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#1E1E1E"
+            android:text="6. الإعدادات العامة الشاملة"
+            android:textColor="#FFFFFF"
+            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/tvStatusInfo"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/btnOpenAiSettings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_status_item"
-                android:backgroundTint="@null"
-                android:padding="14dp"
-                android:text="إعدادات الذكاء الاصطناعي (AI)"
-                android:textColor="#E2E8F0" />
-
-            <Button
-                android:id="@+id/btnOpenGlossary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_status_item"
-                android:backgroundTint="@null"
-                android:padding="14dp"
-                android:text="قاموس المصطلحات (GLOSSARY)"
-                android:textColor="#E2E8F0" />
-
-            <Button
-                android:id="@+id/btnOpenTranslationMemory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_status_item"
-                android:backgroundTint="@null"
-                android:padding="14dp"
-                android:text="ذاكرة الترجمة (TM)"
-                android:textColor="#E2E8F0" />
-
-            <Button
-                android:id="@+id/btnOpenOverlaySettings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_status_item"
-                android:backgroundTint="@null"
-                android:padding="14dp"
-                android:text="إعدادات النافذة العائمة"
-                android:textColor="#E2E8F0" />
-
-            <Button
-                android:id="@+id/btnOpenSettings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_status_item"
-                android:backgroundTint="@null"
-                android:padding="14dp"
-                android:text="الإعدادات العامة"
-                android:textColor="#E2E8F0" />
-        </LinearLayout>
+            android:text="الحالة: جميع الأزرار الستة متصلة وجاهزة"
+            android:textColor="#757575"
+            android:textSize="12sp" />
 
     </LinearLayout>
 </ScrollView>
