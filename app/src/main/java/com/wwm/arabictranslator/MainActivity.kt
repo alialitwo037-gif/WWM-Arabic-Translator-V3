@@ -11,11 +11,6 @@ import com.wwm.arabictranslator.utils.UiGenerator
 
 class MainActivity : AppCompatActivity() {
 
-    // متغير بسيط لتتبع حالة الترجمة بدقة وأمان تام
-    companion object {
-        var isTranslationActive: Boolean = false
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,33 +33,23 @@ class MainActivity : AppCompatActivity() {
                 )
                 startActivity(intent)
             } else {
-                if (!isTranslationActive) {
-                    isTranslationActive = true
-                    Toast.makeText(this, "جاري بدء الترجمة...", Toast.LENGTH_SHORT).show()
-                    tvStatus?.text = "الحالة: تعمل"
-                    val serviceIntent = Intent(this, TranslationService::class.java)
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        startForegroundService(serviceIntent)
-                    } else {
-                        startService(serviceIntent)
-                    }
+                Toast.makeText(this, "جاري بدء الترجمة...", Toast.LENGTH_SHORT).show()
+                tvStatus?.text = "الحالة: تعمل"
+                val serviceIntent = Intent(this, TranslationService::class.java)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent)
                 } else {
-                    Toast.makeText(this, "الترجمة تعمل بالفعل", Toast.LENGTH_SHORT).show()
+                    startService(serviceIntent)
                 }
             }
         }
 
-        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) بمعالجة حالة ذكية وآمنة 100%
+        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) - إرسال طلب إيقاف مباشر وآمن للخدمة دون شروط معلقة
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
-            if (isTranslationActive) {
-                isTranslationActive = false
-                Toast.makeText(this, "تم إيقاف الترجمة بنجاح", Toast.LENGTH_SHORT).show()
-                tvStatus?.text = "الحالة: متوقف"
-                val serviceIntent = Intent(this, TranslationService::class.java)
-                stopService(serviceIntent)
-            } else {
-                Toast.makeText(this, "الخدمة متوقفة بالفعل", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(this, "تم إرسال أمر إيقاف الترجمة", Toast.LENGTH_SHORT).show()
+            tvStatus?.text = "الحالة: متوقف"
+            val serviceIntent = Intent(this, TranslationService::class.java)
+            stopService(serviceIntent)
         }
 
         // ربط أزرار التنقل بين الشاشات
