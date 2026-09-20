@@ -34,11 +34,16 @@
             android:exported="false"
             android:label="قاموس المصطلحات" />
 
-        <!-- شاشة ذاكرة الترجمة المضافة حديثاً -->
         <activity
             android:name=".memory.TranslationMemoryActivity"
             android:exported="false"
             android:label="ذاكرة الترجمة" />
+
+        <!-- شاشة إعدادات الـ Overlay المضافة حديثاً -->
+        <activity
+            android:name=".ui.OverlaySettingsActivity"
+            android:exported="false"
+            android:label="إعدادات الـ Overlay" />
 
         <service
             android:name=".service.TranslatorService"
