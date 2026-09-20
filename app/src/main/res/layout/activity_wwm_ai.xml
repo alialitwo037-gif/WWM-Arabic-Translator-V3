@@ -2,94 +2,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A"
+    android:background="#121212"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="24dp">
 
-    <!-- Header -->
+    <!-- عنوان الشاشة -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="إعدادات الذكاء الاصطناعي (WWM AI)"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:text="إعدادات الذكاء الاصطناعي"
+        android:textColor="#FFD700"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="32dp" />
 
-    <ScrollView
+    <!-- حقل إدخال مفتاح الـ API -->
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:text="مفتاح الـ API الخاص (API Key):"
+        android:textColor="#E0E0E0"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <EditText
+        android:id="@+id/etApiKey"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#1E1E1E"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#757575"
+        android:hint="أدخل مفتاح الـ API هنا..."
+        android:inputType="textPassword"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="24dp" />
 
-            <!-- AI Engine Selection -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#1E293B"
-                android:orientation="vertical"
-                android:padding="16dp">
+    <!-- اختيار نموذج الذكاء الاصطناعي -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="اختر نموذج الذكاء الاصطناعي:"
+        android:textColor="#E0E0E0"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="محرك الترجمة"
-                    android:textColor="#E2E8F0"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+    <Spinner
+        android:id="@+id/spinnerAiModel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#1E1E1E"
+        android:layout_marginBottom="40dp" />
 
-                <Spinner
-                    android:id="@+id/spAiEngine"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp" />
-
-            </LinearLayout>
-
-            <!-- API Key Input -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="#1E293B"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="مفتاح API"
-                    android:textColor="#E2E8F0"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etApiKey"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="#0F172A"
-                    android:hint="أدخل مفتاح الـ API..."
-                    android:inputType="textPassword"
-                    android:padding="12dp"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#64748B" />
-
-            </LinearLayout>
-
-            <!-- Save Button -->
-            <Button
-                android:id="@+id/btnSaveAiConfig"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="حفظ الإعدادات" />
-
-        </LinearLayout>
-    </ScrollView>
+    <!-- زر الحفظ الفعلي والعميق -->
+    <Button
+        android:id="@+id/btnSaveAiSettings"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:backgroundTint="#8B0000"
+        android:text="حفظ الإعدادات نهائياً"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
 </LinearLayout>
