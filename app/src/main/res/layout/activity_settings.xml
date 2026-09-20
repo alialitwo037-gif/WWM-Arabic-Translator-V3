@@ -1,39 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A"
-    android:padding="16dp">
+    android:background="#121212"
+    android:orientation="vertical"
+    android:padding="20dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="الإعدادات العامة"
+        android:textColor="#FFD700"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="الإعدادات العامة"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+    <Button
+        android:id="@+id/btnTranslatingSettings"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:backgroundTint="#1E1E1E"
+        android:text="إعدادات الترجمة (اللغة والـ API)"
+        android:textColor="#FFFFFF"
+        android:gravity="start|center_vertical"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="12dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="#1E293B"
-            android:orientation="vertical"
-            android:padding="16dp">
+    <Button
+        android:id="@+id/btnOverlaySettingsMenu"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:backgroundTint="#1E1E1E"
+        android:text="إعدادات الـ Overlay والشاشة"
+        android:textColor="#FFFFFF"
+        android:gravity="start|center_vertical"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="12dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="خيارات الترجمة وحفظ البيانات"
-                android:textColor="#E2E8F0"
-                android:textSize="16sp" />
+    <Button
+        android:id="@+id/btnDataSettings"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:backgroundTint="#1E1E1E"
+        android:text="البيانات وذاكرة الترجمة (Import / Export)"
+        android:textColor="#FFFFFF"
+        android:gravity="start|center_vertical"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="12dp" />
 
-        </LinearLayout>
+    <Button
+        android:id="@+id/btnAboutApp"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:backgroundTint="#1E1E1E"
+        android:text="حول التطبيق ومعلومات النسخة"
+        android:textColor="#FFFFFF"
+        android:gravity="start|center_vertical"
+        android:paddingStart="16dp" />
 
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>
