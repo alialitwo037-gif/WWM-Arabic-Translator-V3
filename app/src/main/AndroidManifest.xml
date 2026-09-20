@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wwm.arabictranslator">
 
-    <!-- أذونات الإنترنت وتراكب الشاشة والخدمة الأمامية -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -16,7 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
 
-        <!-- الشاشة الرئيسية -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -26,19 +24,22 @@
             </intent-filter>
         </activity>
 
-        <!-- شاشة WWM AI -->
         <activity
             android:name=".ai.WwmAiActivity"
             android:exported="false"
             android:label="WWM AI" />
 
-        <!-- شاشة قاموس المصطلحات المضافة حديثاً -->
         <activity
             android:name=".glossary.GlossaryActivity"
             android:exported="false"
             android:label="قاموس المصطلحات" />
 
-        <!-- خدمة الترجمة الشاشة والتراكب (Overlay Service) -->
+        <!-- شاشة ذاكرة الترجمة المضافة حديثاً -->
+        <activity
+            android:name=".memory.TranslationMemoryActivity"
+            android:exported="false"
+            android:label="ذاكرة الترجمة" />
+
         <service
             android:name=".service.TranslatorService"
             android:enabled="true"
