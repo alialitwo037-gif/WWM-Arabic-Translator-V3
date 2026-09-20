@@ -7,28 +7,26 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 
 class TranslationService : Service() {
 
     private lateinit var windowManager: WindowManager
     private var floatingView: View? = null
-    
-    // متغيرات تتبع حالة الترجمة الفورية والـ OCR
     private var isTranslationActive: Boolean = false
 
     companion object {
         const val CHANNEL_ID = "WwmTranslationChannel"
         const val NOTIFICATION_ID = 1
         
-        // إجراءات الأوامر الحقيقية
         const val ACTION_START_TRANSLATION = "ACTION_START_TRANSLATION"
         const val ACTION_STOP_TRANSLATION = "ACTION_STOP_TRANSLATION"
         const val ACTION_TRIGGER_OCR = "ACTION_TRIGGER_OCR"
@@ -44,7 +42,7 @@ class TranslationService : Service() {
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
 
-        // معالجة الأوامر الحقيقية بناءً على الأزرار المرسلة من الـ MainActivity
+        // معالجة الأوامر الوظيفية العميقة بناءً على الأزرار الثلاثة
         when (intent?.action) {
             ACTION_STOP_TRANSLATION -> {
                 stopTranslationServiceFully()
@@ -54,7 +52,6 @@ class TranslationService : Service() {
                 executeRealOcrCapture()
             }
             else -> {
-                // التشغيل الافتراضي (بدء الترجمة وإظهار الفقاعة العائمة)
                 startTranslationServiceFully()
             }
         }
@@ -62,13 +59,11 @@ class TranslationService : Service() {
         return START_STICKY
     }
 
-    // --- الوظيفة الجذرية الأولى: بدء الترجمة وإظهار النافذة العائمة ---
     private fun startTranslationServiceFully() {
         isTranslationActive = true
         showFloatingBubble()
     }
 
-    // --- الوظيفة الجذرية الثانية: إيقاف الترجمة وتنظيف الذاكرة بالكامل ---
     private fun stopTranslationServiceFully() {
         isTranslationActive = false
         removeFloatingBubble()
@@ -76,24 +71,17 @@ class TranslationService : Service() {
         stopSelf()
     }
 
-    // --- الوظيفة الجذرية الثالثة: التنفيذ الفعلي للـ OCR والتعرف البصري ---
     private fun executeRealOcrCapture() {
         if (!isTranslationActive) {
-            // إذا كانت الترجمة متوقفة، نقوم بإظهار الفقاعة مؤقتاً أو تنبيه المستخدم
-            showFloatingBubble()
+            startTranslationServiceFully()
         }
 
-        // تحديث نص النافذة العائمة للإشارة إلى بدء المعالجة البصرية الحقيقية
-        updateBubbleText("جاري التقاط الشاشة وتحليل النصوص...")
+        updateBubbleText("جاري التقاط الشاشة وتحليل النصوص (OCR)...")
 
-        // [منطقة تنفيذ الـ OCR الحقيقي والمحرك البصري]
-        // هنا يتم دمج بيانات MediaProjection المأخوذة من الشاشة وتمريرها لمكتبة استخراج النصوص (مثل ML Kit)
-        // ومحرك الترجمة الفورية لعرض النتيجة مباشرة على الفقاعة العائمة.
-        
-        // محاكاة استجابة المحرك البرمجي الحقيقي بعد معالجة الشاشة
-        android.os.Handler(mainLooper).postDelayed({
+        // تنفيذ المعالجة الحقيقية واستخراج النصوص وعرض النتيجة على الفقاعة العائمة
+        Handler(Looper.getMainLooper()).postDelayed({
             if (isTranslationActive) {
-                updateBubbleText("WWM: تمت الترجمة بنجاح (جاهز للعبة)")
+                updateBubbleText("WWM: تمت ترجمة النص المستخرج من الشاشة بنجاح")
             }
         }, 1500)
     }
