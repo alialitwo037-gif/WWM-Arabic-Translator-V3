@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) - إرسال طلب إيقاف مباشر وآمن للخدمة دون شروط معلقة
+        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2 - مطابق للقواعد الصارمة)
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
             Toast.makeText(this, "تم إرسال أمر إيقاف الترجمة", Toast.LENGTH_SHORT).show()
             tvStatus?.text = "الحالة: متوقف"
