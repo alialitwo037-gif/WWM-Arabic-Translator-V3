@@ -1,4 +1,4 @@
-name: Android Build & Full Diagnostic Check
+Name: Android Build & Full Diagnostic Check
 
 on:
   push:
@@ -13,6 +13,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Print Project File Structure
+        run: |
+          echo "=== All Project Files ==="
+          find app/src/main -type f
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
