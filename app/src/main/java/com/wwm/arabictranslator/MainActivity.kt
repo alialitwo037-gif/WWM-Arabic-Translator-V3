@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.wwm.arabictranslator.ai.WwmAiActivity
 import com.wwm.arabictranslator.glossary.GlossaryActivity
+import com.wwm.arabictranslator.memory.TranslationMemoryActivity
 import com.wwm.arabictranslator.service.TranslatorService
 
 class MainActivity : AppCompatActivity() {
@@ -50,11 +51,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // باقي الأزرار سيتم ربطها فور إنشاء شاشاتها
+        // التنقل إلى شاشة ذاكرة الترجمة
         btnMemory.setOnClickListener {
-            Toast.makeText(this, "فتح ذاكرة الترجمة", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, TranslationMemoryActivity::class.java)
+            startActivity(intent)
         }
 
+        // زر الإعدادات سيتم ربطه بالشاشة القادمة
         btnSettings.setOnClickListener {
             Toast.makeText(this, "فتح الإعدادات", Toast.LENGTH_SHORT).show()
         }
