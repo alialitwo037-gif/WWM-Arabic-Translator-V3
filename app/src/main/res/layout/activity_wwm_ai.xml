@@ -1,259 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D1117"
+    android:background="#0F172A"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- الهيدر العلوي -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="رجوع"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="#C9D1D9" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="WWM AI"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="مساعدك الذكي في Where Winds Meet"
-                android:textColor="#8B949E"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </RelativeLayout>
-
-    <!-- كارت النص الأخير المأخوذ بالـ OCR -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardBackgroundColor="#161B22"
-        app:cardCornerRadius="12dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="OCR من الأخيرة"
-                android:textColor="#8B949E"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/tvOcrOriginal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="The path ahead is dangerous."
-                android:textColor="#58A6FF"
-                android:textSize="14sp"
-                android:textStyle="italic" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginVertical="8dp"
-                android:background="#21262D" />
-
-            <TextView
-                android:id="@+id/tvOcrTranslated"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="الطريق أمامنا خطير."
-                android:textColor="#3FB950"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- حقل السؤال وأزرار التفاعل -->
-    <EditText
-        android:id="@+id/etAiQuery"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@drawable/bg_status_item"
-        android:gravity="top|start"
-        android:hint="اكتب سؤالك هنا..."
-        android:padding="12dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#8B949E"
-        android:textSize="14sp" />
-
-    <Button
-        android:id="@+id/btnAskAi"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#1F6FEB"
-        android:text="اسأل WWM AI"
-        android:textColor="#FFFFFF"
-        app:cornerRadius="10dp" />
-
-    <!-- خيارات إضافية (فهم النص / شرح الترجمة) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:weightSum="2">
-
-        <Button
-            android:id="@+id/btnExplainText"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:text="فهم النص"
-            android:textColor="#58A6FF"
-            app:strokeColor="#1F6FEB" />
-
-        <Button
-            android:id="@+id/btnExplainTranslation"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:text="شرح الترجمة"
-            android:textColor="#58A6FF"
-            app:strokeColor="#1F6FEB" />
-    </LinearLayout>
-
+    <!-- Header -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="إقتراحات سريعة"
-        android:textColor="#8B949E"
-        android:textSize="13sp"
+        android:text="إعدادات الذكاء الاصطناعي (WWM AI)"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- شبكة الإقتراحات السريعة (شرح القصة، المهمة، الشخصيات، الأسلحة) -->
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:columnCount="3"
-        android:rowCount="2">
-
-        <Button
-            android:id="@+id/btnQuickStory"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_columnWeight="1"
-            android:backgroundTint="#161B22"
-            android:text="شرح القصة"
-            android:textColor="#C9D1D9"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnQuickDialog"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_columnWeight="1"
-            android:backgroundTint="#161B22"
-            android:text="شرح الحوار"
-            android:textColor="#C9D1D9"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnQuickTask"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_columnWeight="1"
-            android:backgroundTint="#161B22"
-            android:text="تحليل المهمة"
-            android:textColor="#C9D1D9"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnQuickPlaces"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_columnWeight="1"
-            android:backgroundTint="#161B22"
-            android:text="الأماكن"
-            android:textColor="#C9D1D9"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnQuickWeapons"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_columnWeight="1"
-            android:backgroundTint="#161B22"
-            android:text="الأسلحة"
-            android:textColor="#C9D1D9"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnQuickChars"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_columnWeight="1"
-            android:backgroundTint="#161B22"
-            android:text="الشخصيات"
-            android:textColor="#C9D1D9"
-            android:textSize="12sp" />
-    </GridLayout>
-
-    <!-- مكان عرض إجابة الذكاء الاصطناعي -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="12dp"
-        android:background="#161B22"
-        android:padding="12dp">
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/tvAiResponse"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="جاري انتظار سؤالك..."
-            android:textColor="#8B949E"
-            android:textSize="14sp" />
+            android:orientation="vertical">
+
+            <!-- AI Engine Selection -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#1E293B"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="محرك الترجمة"
+                    android:textColor="#E2E8F0"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spAiEngine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp" />
+
+            </LinearLayout>
+
+            <!-- API Key Input -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#1E293B"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="مفتاح API"
+                    android:textColor="#E2E8F0"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etApiKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="#0F172A"
+                    android:hint="أدخل مفتاح الـ API..."
+                    android:inputType="textPassword"
+                    android:padding="12dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#64748B" />
+
+            </LinearLayout>
+
+            <!-- Save Button -->
+            <Button
+                android:id="@+id/btnSaveAiConfig"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="حفظ الإعدادات" />
+
+        </LinearLayout>
     </ScrollView>
 
 </LinearLayout>
