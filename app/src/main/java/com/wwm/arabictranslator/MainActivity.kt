@@ -1,72 +1,64 @@
 package com.wwm.arabictranslator
 
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private var tvStatus: TextView? = null
+    private lateinit var btnAiSettings: Button
+    private lateinit var btnPreferencesHelper: Button
+    private lateinit var btnTranslationInterface: Button
+    private lateinit var btnOverlaySettings: Button
+    private lateinit var btnTranslationMemory: Button
+    private lateinit var btnGeneralSettings: Button
+    private lateinit var tvStatusInfo: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        tvStatus = findViewById(R.id.tvStatus)
+        // ربط الأزرار الستة بالـ XML
+        btnAiSettings = findViewById(R.id.btnAiSettings)
+        btnPreferencesHelper = findViewById(R.id.btnPreferencesHelper)
+        btnTranslationInterface = findViewById(R.id.btnTranslationInterface)
+        btnOverlaySettings = findViewById(R.id.btnOverlaySettings)
+        btnTranslationMemory = findViewById(R.id.btnTranslationMemory)
+        btnGeneralSettings = findViewById(R.id.btnGeneralSettings)
+        tvStatusInfo = findViewById(R.id.tvStatusInfo)
 
-        // --- الزر الأول: بدء الترجمة الفورية بشكل حقيقي وعميق ---
-        findViewById<Button>(R.id.btnStartTranslation)?.setOnClickListener {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "يرجى منح إذن العرض فوق التطبيقات لتمكين الترجمة", Toast.LENGTH_LONG).show()
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                )
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "جاري تفعيل الترجمة الفورية...", Toast.LENGTH_SHORT).show()
-                tvStatus?.text = "الحالة: تعمل بنجاح"
-                
-                // إرسال أمر البدء الحقيقي للخدمة الخلفية
-                val serviceIntent = Intent(this, TranslationService::class.java).apply {
-                    action = TranslationService.ACTION_START_TRANSLATION
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(serviceIntent)
-                } else {
-                    startService(serviceIntent)
-                }
-            }
+        // 1. زر إعدادات المساعد والذكاء الاصطناعي
+        btnAiSettings.setOnClickListener {
+            startActivity(Intent(this, WwmAiActivity::class.java))
         }
 
-        // --- الزر الثاني: إيقاف الترجمة الفورية وتنظيف الذاكرة بشكل كامل ---
-        findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
-            Toast.makeText(this, "جاري إيقاف الترجمة...", Toast.LENGTH_SHORT).show()
-            tvStatus?.text = "الحالة: متوقفة"
-            
-            // إرسال أمر الإيقاف الحقيقي للخدمة الخلفية
-            val serviceIntent = Intent(this, TranslationService::class.java).apply {
-                action = TranslationService.ACTION_STOP_TRANSLATION
-            }
-            startService(serviceIntent)
+        // 2. زر إدارة الذاكرة ومفاتيح الربط
+        btnPreferencesHelper.setOnClickListener {
+            // توجيه إلى واجهة إعدادات المفاتيح والذاكرة الخاصة
+            startActivity(Intent(this, WwmAiActivity::class.java))
         }
 
-        // --- الزر الثالث: التقاط الشاشة وتشغيل التعرف البصري (OCR) والترجمة الفورية الحقيقية ---
-        findViewById<Button>(R.id.btnTriggerOcr)?.setOnClickListener {
-            Toast.makeText(this, "جاري التقاط الشاشة وتحليل النصوص (OCR)...", Toast.LENGTH_SHORT).show()
-            tvStatus?.text = "الحالة: جاري مسح النصوص..."
-            
-            // إرسال أمر الـ OCR الحقيقي للخدمة الخلفية
-            val serviceIntent = Intent(this, TranslationService::class.java).apply {
-                action = TranslationService.ACTION_TRIGGER_OCR
-            }
-            startService(serviceIntent)
+        // 3. زر واجهة الترجمة المتقدمة
+        btnTranslationInterface.setOnClickListener {
+            // توجيه إلى واجهة الترجمة
+            startActivity(Intent(this, WwmAiActivity::class.java))
+        }
+
+        // 4. زر إعدادات الـ Overlay والشاشة
+        btnOverlaySettings.setOnClickListener {
+            startActivity(Intent(this, OverlaySettingsActivity::class.java))
+        }
+
+        // 5. زر ذاكرة الترجمة والمصطلحات
+        btnTranslationMemory.setOnClickListener {
+            startActivity(Intent(this, TranslationMemoryActivity::class.java))
+        }
+
+        // 6. زر الإعدادات العامة الشاملة
+        btnGeneralSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
     }
 }
