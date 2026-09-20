@@ -1,41 +1,41 @@
-name: Android Build & Full Diagnostic Check
+name: Android Build & Package APK
 
 on:
   push:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Print Project File Structure
-        run: |
-          echo "=== All Project Files ==="
-          find app/src/main -type f
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
 
-      - name: Setup Gradle 8.5
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.5'
-          dependency-graph: 'disabled'
+    - name: Verify Project Tree Structure
+      run: |
+        echo "=== Verifying Built Files Structure ==="
+        find app/src/main -type f
 
-      - name: Build Android APK
-        run: gradle assembleDebug --quiet
+    - name: Build Debug APK with Gradle
+      run: ./gradlew assembleDebug --stacktrace
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WWM-Arabic-Translator-v3-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 7
