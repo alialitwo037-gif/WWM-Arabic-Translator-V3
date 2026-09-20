@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
 
+        <!-- الشاشة الرئيسية -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -24,27 +25,31 @@
             </intent-filter>
         </activity>
 
+        <!-- شاشة WWM AI -->
         <activity
             android:name=".ai.WwmAiActivity"
             android:exported="false"
             android:label="WWM AI" />
 
+        <!-- شاشة قاموس المصطلحات -->
         <activity
             android:name=".glossary.GlossaryActivity"
             android:exported="false"
             android:label="قاموس المصطلحات" />
 
+        <!-- شاشة ذاكرة الترجمة -->
         <activity
             android:name=".memory.TranslationMemoryActivity"
             android:exported="false"
             android:label="ذاكرة الترجمة" />
 
-        <!-- شاشة إعدادات الـ Overlay المضافة حديثاً -->
+        <!-- شاشة إعدادات Overlay -->
         <activity
             android:name=".ui.OverlaySettingsActivity"
             android:exported="false"
             android:label="إعدادات الـ Overlay" />
 
+        <!-- خدمة الترجمة والتراكب -->
         <service
             android:name=".service.TranslatorService"
             android:enabled="true"
