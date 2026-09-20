@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.wwm.arabictranslator.ai.WwmAiActivity
 import com.wwm.arabictranslator.service.TranslatorService
 
 class MainActivity : AppCompatActivity() {
@@ -36,11 +37,13 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "تم إيقاف خدمة الترجمة", Toast.LENGTH_SHORT).show()
         }
 
-        // التنقلات بين الشاشات
+        // التنقل إلى شاشة WWM AI (المساعد الذكي)
         btnWwmAi.setOnClickListener {
-            Toast.makeText(this, "فتح شاشة WWM AI", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, WwmAiActivity::class.java)
+            startActivity(intent)
         }
 
+        // التنقلات لباقي الشاشات (سيتم ربطها فور إنشائها)
         btnGlossary.setOnClickListener {
             Toast.makeText(this, "فتح قاموس المصطلحات", Toast.LENGTH_SHORT).show()
         }
