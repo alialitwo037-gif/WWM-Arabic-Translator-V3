@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             UiGenerator.applyHeaderGradient(it)
         }
 
-        // ربط وظيفة زر بدء الترجمة (الزر رقم 1)
+        // --- الزر رقم 1: بدء الترجمة ---
         findViewById<Button>(R.id.btnStartTranslation)?.setOnClickListener {
             if (!android.provider.Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "يرجى منح إذن العرض فوق التطبيقات لتمكين الترجمة", Toast.LENGTH_LONG).show()
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2 - مطابق للقواعد الصارمة)
+        // --- الزر رقم 2: إيقاف الترجمة ---
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
             Toast.makeText(this, "تم إرسال أمر إيقاف الترجمة", Toast.LENGTH_SHORT).show()
             tvStatus?.text = "الحالة: متوقف"
