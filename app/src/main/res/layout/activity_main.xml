@@ -71,7 +71,7 @@
                     android:src="@drawable/ic_dot_green" />
             </LinearLayout>
 
-            <!-- 1. زر بدء الترجمة (الزر الرئيسي البارز مع الشكل المخصص والتدرج) -->
+            <!-- 1. زر بدء الترجمة (تم اعتماده مسبقاً) -->
             <Button
                 android:id="@+id/btnStartTranslation"
                 android:layout_width="match_parent"
@@ -85,14 +85,14 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <!-- 2. زر إيقاف الترجمة (الزر الداكن تحته مباشرة) -->
+            <!-- 2. زر إيقاف الترجمة (المعدل بالشكل المخصص الجديد) -->
             <Button
                 android:id="@+id/btnStopTranslation"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/bg_status_item"
-                android:backgroundTint="#1F2937"
+                android:background="@drawable/bg_secondary_button"
+                android:backgroundTint="@null"
                 android:padding="10dp"
                 android:text="إيقاف الترجمة"
                 android:textColor="#9CA3AF"
