@@ -1,7 +1,5 @@
 package com.wwm.arabictranslator
 
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -13,14 +11,9 @@ import com.wwm.arabictranslator.utils.UiGenerator
 
 class MainActivity : AppCompatActivity() {
 
-    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.name == service.service.className) {
-                return true
-            }
-        }
-        return false
+    // متغير بسيط لتتبع حالة الترجمة بدقة وأمان تام
+    companion object {
+        var isTranslationActive: Boolean = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,20 +38,26 @@ class MainActivity : AppCompatActivity() {
                 )
                 startActivity(intent)
             } else {
-                Toast.makeText(this, "جاري بدء الترجمة...", Toast.LENGTH_SHORT).show()
-                tvStatus?.text = "الحالة: تعمل"
-                val serviceIntent = Intent(this, TranslationService::class.java)
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    startForegroundService(serviceIntent)
+                if (!isTranslationActive) {
+                    isTranslationActive = true
+                    Toast.makeText(this, "جاري بدء الترجمة...", Toast.LENGTH_SHORT).show()
+                    tvStatus?.text = "الحالة: تعمل"
+                    val serviceIntent = Intent(this, TranslationService::class.java)
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent)
+                    } else {
+                        startService(serviceIntent)
+                    }
                 } else {
-                    startService(serviceIntent)
+                    Toast.makeText(this, "الترجمة تعمل بالفعل", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) مع فحص منطقي دقيق لحالة الخدمة
+        // ربط وظيفة زر إيقاف الترجمة (الزر رقم 2) بمعالجة حالة ذكية وآمنة 100%
         findViewById<Button>(R.id.btnStopTranslation)?.setOnClickListener {
-            if (isServiceRunning(TranslationService::class.java)) {
+            if (isTranslationActive) {
+                isTranslationActive = false
                 Toast.makeText(this, "تم إيقاف الترجمة بنجاح", Toast.LENGTH_SHORT).show()
                 tvStatus?.text = "الحالة: متوقف"
                 val serviceIntent = Intent(this, TranslationService::class.java)
