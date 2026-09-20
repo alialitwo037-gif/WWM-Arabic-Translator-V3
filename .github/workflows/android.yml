@@ -26,8 +26,8 @@ jobs:
       with:
         gradle-version: '8.4'
 
-    - name: Build with Gradle
-      run: gradle assembleDebug --quiet --console=plain
+    - name: Build with Gradle (Continue on error)
+      run: gradle assembleDebug --continue --quiet --console=plain
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
