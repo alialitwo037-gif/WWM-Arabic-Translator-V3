@@ -3,7 +3,6 @@ package com.wwm.arabictranslator
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -20,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         val btnOpenSettings = findViewById<Button>(R.id.btnOpenSettings)
 
         btnToggleOverlay.setOnClickListener {
-            // Toggle overlay action
+            // تشغيل/إيقاف خدمة النافذة العائمة
         }
 
         btnOpenAiSettings.setOnClickListener {
@@ -36,7 +35,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnOpenOverlaySettings.setOnClickListener {
-            startActivity(Intent(this, OverlaySettingsActivity::class.java))
+            try {
+                val intent = Intent(this, Class.forName("com.wwm.arabictranslator.OverlaySettingsActivity"))
+                startActivity(intent)
+            } catch (e: ClassNotFoundException) {
+                // في حال كانت الأكتيفيتي بنفس الـ package الحالي
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
         }
 
         btnOpenSettings.setOnClickListener {
