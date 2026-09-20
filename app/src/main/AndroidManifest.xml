@@ -49,6 +49,12 @@
             android:exported="false"
             android:label="إعدادات الـ Overlay" />
 
+        <!-- شاشة الإعدادات العامة -->
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:label="الإعدادات العامة" />
+
         <!-- خدمة الترجمة والتراكب -->
         <service
             android:name=".service.TranslatorService"
