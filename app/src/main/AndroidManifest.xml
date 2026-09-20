@@ -2,20 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wwm.arabictranslator">
 
+    <!-- الأذونات الأساسية للتطبيق والترجمة الشاشة -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:label="WWM Arabic Translator"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
 
-        <!-- الشاشة الرئيسية -->
+        <!-- الشاشة الرئيسية (شاشة البداية) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -25,42 +26,12 @@
             </intent-filter>
         </activity>
 
-        <!-- شاشة WWM AI -->
-        <activity
-            android:name=".ai.WwmAiActivity"
-            android:exported="false"
-            android:label="WWM AI" />
-
-        <!-- شاشة قاموس المصطلحات -->
-        <activity
-            android:name=".glossary.GlossaryActivity"
-            android:exported="false"
-            android:label="قاموس المصطلحات" />
-
-        <!-- شاشة ذاكرة الترجمة -->
-        <activity
-            android:name=".memory.TranslationMemoryActivity"
-            android:exported="false"
-            android:label="ذاكرة الترجمة" />
-
-        <!-- شاشة إعدادات Overlay -->
-        <activity
-            android:name=".ui.OverlaySettingsActivity"
-            android:exported="false"
-            android:label="إعدادات الـ Overlay" />
-
-        <!-- شاشة الإعدادات العامة -->
-        <activity
-            android:name=".settings.SettingsActivity"
-            android:exported="false"
-            android:label="الإعدادات العامة" />
-
-        <!-- خدمة الترجمة والتراكب -->
-        <service
-            android:name=".service.TranslatorService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection" />
+        <!-- بقية شاشات التطبيق -->
+        <activity android:name=".WwmAiActivity" android:exported="false" />
+        <activity android:name=".GlossaryActivity" android:exported="false" />
+        <activity android:name=".TranslationMemoryActivity" android:exported="false" />
+        <activity android:name=".OverlaySettingsActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
 
     </application>
 
