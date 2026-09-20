@@ -52,6 +52,19 @@ class MainActivity : AppCompatActivity() {
             stopService(serviceIntent)
         }
 
+        // --- الزر رقم 3: التعرف البصري (OCR) ---
+        findViewById<Button>(R.id.btnOcrCapture)?.setOnClickListener {
+            Toast.makeText(this, "جاري التقاط الشاشة لتحليل النصوص (OCR)...", Toast.LENGTH_SHORT).show()
+            val ocrIntent = Intent(this, TranslationService::class.java).apply {
+                action = "ACTION_TRIGGER_OCR"
+            }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                startForegroundService(ocrIntent)
+            } else {
+                startService(ocrIntent)
+            }
+        }
+
         // ربط أزرار التنقل بين الشاشات
         findViewById<Button>(R.id.btnOpenAiSettings)?.setOnClickListener {
             startActivity(Intent(this, WwmAiActivity::class.java))
